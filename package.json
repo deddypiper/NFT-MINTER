@@ -1,4 +1,5 @@
 {
+  "homepage": "https://deddypiper.github.io/nft-minter",
   "name": "codepipr-minter-dapp",
   "version": "0.1.0",
   "private": true,
@@ -16,6 +17,7 @@
     "bootstrap": "^5.1.3",
     "bootstrap-icons": "^1.7.1",
     "dotenv": "^10.0.0",
+    "gh-pages": "^4.0.0",
     "ipfs-http-client": "^50.0.0",
     "nft.storage": "^7.0.0",
     "prop-types": "^15.7.2",
@@ -35,6 +37,8 @@
     "compile": "npx hardhat compile",
     "deploy": "npx hardhat run --network alfajores scripts/deploy.js",
     "test-contract": "npx hardhat test"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
