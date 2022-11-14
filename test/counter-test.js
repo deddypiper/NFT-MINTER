@@ -1,34 +1,47 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("Counter", function () {
+describe("MineNFT", function () {
   this.timeout(50000);
 
-  let counter;
+  let mineNFT;
+  let owner;
+  let acc1;
+  let acc2;
 
   this.beforeEach(async function () {
-    const Counter = await ethers.getContractFactory("Counter");
-    counter = await Counter.deploy();
+    // This is executed before each test
+    // Deploying the smart contract
+    const MineNFT = await ethers.getContractFactory("MineNFT");
+    [owner, acc1, acc2] = await ethers.getSigners();
+
+    mineNFT = await MineNFT.deploy();
   });
 
-  it("Should get count", async function () {
-    expect(await counter.get()).to.equal(0);
+  it("Should set the right owner", async function () {
+    expect(await mineNFT.owner()).to.equal(owner.address);
   });
 
-  it("Should increment count", async function () {
-    const tx = await counter.inc();
+  it("Should mint one NFT", async function () {
+    expect(await mineNFT.balanceOf(acc1.address)).to.equal(0);
+
+    const tokenURI = "https://example.com/1";
+    const tx = await mineNFT.connect(owner).safeMint(acc1.address, tokenURI);
     await tx.wait();
 
-    expect(await counter.get()).to.equal(1);
+    expect(await mineNFT.balanceOf(acc1.address)).to.equal(1);
   });
 
-  it("Should decrement count", async function () {
-    const incTx = await counter.inc();
-    await incTx.wait();
+  it("Should set the correct tokenURI", async function () {
+    const tokenURI_1 = "https://example.com/1";
+    const tokenURI_2 = "https://example.com/2";
 
-    const decTx = await counter.dec();
-    await decTx.wait();
+    const tx1 = await mineNFT.connect(owner).safeMint(acc1.address, tokenURI_1);
+    await tx1.wait();
+    const tx2 = await mineNFT.connect(owner).safeMint(acc2.address, tokenURI_2);
+    await tx2.wait();
 
-    expect(await counter.get()).to.equal(0);
+    expect(await mineNFT.tokenURI(0)).to.equal(tokenURI_1);
+    expect(await mineNFT.tokenURI(1)).to.equal(tokenURI_2);
   });
 });
